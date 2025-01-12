@@ -82,7 +82,7 @@ const Categories = () => {
           placeholder="Enter category name"
           value={categoryName}
           onChange={(e) => setCategoryName(e.target.value)}
-          className="px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
+          className="px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300 w-[850px]"
         />
         <button
           onClick={editCategoryId ? handleUpdateCategory : handleAddCategory}

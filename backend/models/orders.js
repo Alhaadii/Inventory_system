@@ -3,15 +3,20 @@ import mongoose from "mongoose";
 const schema = new mongoose.Schema(
   {
     items: [
-      // have _id of the product and quantity
       {
-        _id: { type: Schema.Types.ObjectId, ref: "Product" },
-        quantity: { type: Number, required: true },
+        productId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Products",
+          required: true,
+        },
+        name: { type: String, required: true },
+        quantity: { type: Number, required: true, min: 1 },
+        price: { type: Number, required: true },
       },
     ],
     total: { type: Number, required: true },
-    customer: { type: Schema.Types.ObjectId, ref: "Customer" },
-    orderedBy: { type: Schema.Types.ObjectId, ref: "User" },
+    customer: { type: mongoose.Schema.Types.ObjectId, ref: "Customers" },
+    orderedBy: { type: mongoose.Schema.Types.ObjectId, ref: "Users" },
     paymentMethod: { type: String, default: "cash" },
     paymentStatus: {
       type: String,
@@ -24,5 +29,6 @@ const schema = new mongoose.Schema(
     timestamps: true,
   }
 );
+const ordersModal = mongoose.model("Orders", schema);
 
-module.exports = mongoose.model("Orders", schema);
+export default ordersModal;

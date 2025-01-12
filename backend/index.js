@@ -6,6 +6,8 @@ import cookieParser from "cookie-parser";
 import catRouter from "./routes/categories.js";
 import productRouter from "./routes/products.js";
 import customerRouter from "./routes/customers.js";
+import ordersRouter from "./routes/orders.js";
+import router from "./routes/home.js";
 const app = express();
 const port = 8000;
 app.use(express.json());
@@ -17,6 +19,8 @@ app.use("/users", userRouter);
 app.use("/cats", catRouter);
 app.use("/products", productRouter);
 app.use("/customers", customerRouter);
+app.use("/orders", ordersRouter);
+app.use("/home", router)
 app.get("/", (req, res) => {
   res.send("Hello! Welcome to Inventory Management System...");
 });

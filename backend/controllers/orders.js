@@ -1,109 +1,165 @@
-const Orders = require("../models/orders");
-const Products = require("../models/products");
-const Customers = require("../models/customers");
+import mongoose from "mongoose";
+import ordersModal from "../models/orders.js";
+import productModal from "../models/products.js";
 
-exports.getMeta = async (req, res) => {
+// Create a new order
+export const createOrder = async (req, res) => {
   try {
-    const findAll = await Products.find({}).populate("category");
-    res.status(200).json(findAll);
+    const { items, customer, orderedBy, paymentMethod, paymentStatus } =
+      req.body;
+
+    // Calculate total explicitly
+    let total = 0;
+    for (const item of items) {
+      const product = await productModal.findById(item.productId);
+      if (!product) {
+        return res
+          .status(404)
+          .json({ message: `Product not found: ${item.productId}` });
+      }
+
+      if (product.quantity < item.quantity) {
+        return res.status(400).json({
+          message: `Insufficient quantity for product: ${product.name}`,
+        });
+      }
+
+      // Subtract quantity from product
+      product.quantity -= item.quantity;
+      await product.save();
+
+      // Calculate total price for the item
+      total += item.quantity * item.price;
+    }
+
+    // Create order
+    const order = new ordersModal({
+      items,
+      total,
+      customer,
+      orderedBy,
+      paymentMethod,
+      paymentStatus,
+    });
+
+    await order.save();
+    res.status(201).json({ message: "Order created successfully", order });
   } catch (error) {
-    return res.status(500).json({ message: error.message });
+    res
+      .status(500)
+      .json({ message: "Failed to create order", error: error.message });
   }
 };
 
-exports.getOrders = async (req, res) => {
-  const orders = await Orders.find().populate("customer").populate("orderedBy");
-
-  res.status(200).json(orders);
-};
-
-exports.getOrder = async (req, res) => {
-  const order = await Orders.findById(req.params.id)
-    .populate("items")
-    .populate("customer")
-    .populate("orderedBy");
-
-  res.status(200).json(order);
-};
-
-exports.createOrder = async (req, res) => {
+// Update an existing order
+export const updateOrder = async (req, res) => {
   try {
-    for (const item of req.body.items) {
-      const product = await Products.findById(item._id);
-      if (product.quantity < item.quantity) {
-        return res.status(400).json({
-          message: `Product ${product.name} is out of stock`,
-        });
+    const { id } = req.params;
+    const { items, customer, orderedBy, paymentMethod, paymentStatus } =
+      req.body;
+
+    // Calculate total explicitly
+    let total = 0;
+    for (const item of items) {
+      total += item.quantity * item.price;
+    }
+
+    const updatedOrder = await ordersModal.findByIdAndUpdate(
+      id,
+      { items, total, customer, orderedBy, paymentMethod, paymentStatus },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedOrder) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    res
+      .status(200)
+      .json({ message: "Order updated successfully", order: updatedOrder });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Failed to update order", error: error.message });
+  }
+};
+
+// Delete an order
+export const deleteOrder = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const deletedOrder = await ordersModal.findByIdAndDelete(id);
+    if (!deletedOrder) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    // Optionally, restock products if desired
+    for (const item of deletedOrder.items) {
+      const product = await productModal.findById(item.productId);
+      if (product) {
+        product.quantity += item.quantity;
+        await product.save();
       }
     }
 
-    const newOrder = new Orders(req.body);
-    await newOrder.save();
+    res.status(200).json({ message: "Order deleted successfully" });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Failed to delete order", error: error.message });
+  }
+};
 
-    for (const item of newOrder.items) {
-      const product = await Products.findById(item._id).exec();
-      product.quantity = product.quantity - item.quantity;
-      await product.save();
+// Get a single order by ID
+export const getOrder = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const order = await ordersModal
+      .findById(id)
+      .populate("customer")
+      .populate("orderedBy")
+      .populate("items.productId");
+
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
     }
 
-    res.status(201).json({
-      message: "Order created successfully",
-      ...newOrder._doc,
-    });
+    res.status(200).json(order);
   } catch (error) {
-    console.error("Error creating order:", error);
-    res.status(500).json({ error: "An error occurred" });
+    res
+      .status(500)
+      .json({ message: "Failed to fetch order", error: error.message });
   }
 };
 
-exports.updateOrder = async (req, res) => {
-  const updatedOrder = await Orders.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-  });
-  if (!updatedOrder) {
-    return res.status(400).json({
-      message: "Order does not exist",
-    });
-  }
-
-  res.status(200).json({
-    message: "Order updated successfully",
-    ...updatedOrder._doc,
-  });
-};
-
-exports.deleteOrder = async (req, res) => {
-  //  find order if is exist or show error message
-  const order = await Orders.findById(req.params.id);
-  if (!order) {
-    return res.status(400).json({
-      message: "Order does not exist",
-    });
-  }
-  //  delete order
-  await Orders.deleteOne();
-  res.status(200).json({
-    message: "Order deleted successfully",
-  });
-};
-
-// get collection count total orders
-exports.totalOrder = async (req, res) => {
+// Get all orders
+export const getAllOrders = async (req, res) => {
   try {
-    const count = await Orders.countDocuments({});
-    res.status(200).json(count);
+    const orders = await ordersModal
+      .find()
+      .populate("customer")
+      .populate("orderedBy")
+      .populate("items.productId");
+
+    res.status(200).json(orders);
   } catch (error) {
-    return res.status(500).json({ message: error.message });
+    res
+      .status(500)
+      .json({ message: "Failed to fetch orders", error: error.message });
   }
 };
 
-exports.deleteAll = async (req, res) => {
+// Count total orders
+export const countTotalOrders = async (req, res) => {
   try {
-    await Orders.deleteMany({});
-    res.status(200).json({
-      message: "All orders deleted successfully",
-    });
+    const totalOrders = await ordersModal.countDocuments();
+
+    res.status(200).json({ totalOrders });
   } catch (error) {
-    return res.status(500).json({ message: error.message });
+    res
+      .status(500)
+      .json({ message: "Failed to count orders", error: error.message });
   }
 };
