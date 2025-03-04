@@ -9,7 +9,7 @@ import customerRouter from "./routes/customers.js";
 import ordersRouter from "./routes/orders.js";
 import router from "./routes/home.js";
 const app = express();
-const port = 8000;
+const port = 7000;
 app.use(express.json());
 // app.use(cookieParser);
 app.use(cors());
