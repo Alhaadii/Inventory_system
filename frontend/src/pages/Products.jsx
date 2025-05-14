@@ -57,7 +57,7 @@ const Products = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const payload = { ...formData, total, category: formData.category }; // Send the category name
+    const payload = { ...formData, total, category: formData.category }; 
 
     try {
       if (isEdit) {
@@ -79,7 +79,7 @@ const Products = () => {
       quantity: product.quantity,
       salesprice: product.salesprice,
       description: product.description,
-      category: product.category.name, // Set the category name instead of ID
+      category: product.category.name, 
     });
     setTotal(product.total);
     setCurrentId(product._id);
@@ -240,7 +240,6 @@ const Products = () => {
                   {categories.map((cat) => (
                     <option key={cat._id} value={cat.name}>
                       {" "}
-                      {/* Use category name here */}
                       {cat.name}
                     </option>
                   ))}

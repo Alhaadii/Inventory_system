@@ -67,7 +67,7 @@ export const updateOrder = async (req, res) => {
     const updatedOrder = await ordersModal.findByIdAndUpdate(
       id,
       { items, total, customer, orderedBy, paymentMethod, paymentStatus },
-      { new: true, runValidators: true }
+      { new: true }
     );
 
     if (!updatedOrder) {
