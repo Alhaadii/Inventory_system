@@ -24,7 +24,7 @@ const Products = () => {
 
   const fetchProducts = async () => {
     try {
-      const response = await axios.get("http://localhost:8000/products");
+      const response = await axios.get("http://localhost:7000/products");
       setProducts(response.data);
     } catch (error) {
       console.error("Error fetching products:", error);
@@ -33,7 +33,7 @@ const Products = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get("http://localhost:8000/cats");
+      const response = await axios.get("http://localhost:7000/cats");
       setCategories(response.data);
     } catch (error) {
       console.error("Error fetching categories:", error);
@@ -61,9 +61,9 @@ const Products = () => {
 
     try {
       if (isEdit) {
-        await axios.put(`http://localhost:8000/products/${currentId}`, payload);
+        await axios.put(`http://localhost:7000/products/${currentId}`, payload);
       } else {
-        await axios.post("http://localhost:8000/products", payload);
+        await axios.post("http://localhost:7000/products", payload);
       }
       fetchProducts();
       handleCloseModal();
@@ -91,7 +91,7 @@ const Products = () => {
     try {
       // confirmation
       if (window.confirm("Are you sure you want to delete this product?")) {
-        await axios.delete(`http://localhost:8000/products/${id}`);
+        await axios.delete(`http://localhost:7000/products/${id}`);
         fetchProducts();
       }
     } catch (error) {

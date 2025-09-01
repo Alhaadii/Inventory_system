@@ -26,7 +26,7 @@ const Orders = () => {
 
   const fetchOrders = async () => {
     try {
-      const response = await axios.get("http://localhost:8000/orders");
+      const response = await axios.get("http://localhost:7000/orders");
       setOrders(response.data);
     } catch (err) {
       setError("Failed to fetch orders");
@@ -35,7 +35,7 @@ const Orders = () => {
 
   const fetchProducts = async () => {
     try {
-      const response = await axios.get("http://localhost:8000/products");
+      const response = await axios.get("http://localhost:7000/products");
       setProducts(response.data);
     } catch (err) {
       setError("Failed to fetch products");
@@ -44,7 +44,7 @@ const Orders = () => {
 
   const fetchCustomers = async () => {
     try {
-      const response = await axios.get("http://localhost:8000/customers");
+      const response = await axios.get("http://localhost:7000/customers");
       setCustomers(response.data.customers);
     } catch (err) {
       setError("Failed to fetch customers");
@@ -53,7 +53,7 @@ const Orders = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await axios.get("http://localhost:8000/users");
+      const response = await axios.get("http://localhost:7000/users");
       setUsers(response.data);
     } catch (err) {
       setError("Failed to fetch users");
@@ -63,7 +63,7 @@ const Orders = () => {
   const createOrder = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:8000/orders",
+        "http://localhost:7000/orders",
         formData
       );
       setOrders([...orders, response.data.order]);
@@ -79,7 +79,7 @@ const Orders = () => {
     try {
       const updatedOrder = { ...formData };
       const response = await axios.put(
-        `http://localhost:8000/orders/${id}`,
+        `http://localhost:7000/orders/${id}`,
         updatedOrder
       );
       setOrders(
@@ -94,7 +94,7 @@ const Orders = () => {
 
   const deleteOrder = async (id) => {
     try {
-      await axios.delete(`http://localhost:8000/orders/${id}`);
+      await axios.delete(`http://localhost:7000/orders/${id}`);
       setOrders(orders.filter((order) => order._id !== id));
       setError(null);
     } catch (err) {

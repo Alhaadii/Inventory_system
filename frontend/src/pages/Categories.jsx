@@ -8,7 +8,7 @@ const Categories = () => {
   const [loading, setLoading] = useState(false);
   const [total, setTotal] = useState(0);
 
-  const API_URL = "http://localhost:8000/cats";
+  const API_URL = "http://localhost:7000/cats";
 
   // Fetch categories
   const fetchCategories = async () => {

@@ -20,7 +20,7 @@ const Register = () => {
     e.preventDefault();
 
     try {
-      await axios.post("http://localhost:8000/users", formData);
+      await axios.post("http://localhost:7000/users", formData);
       navigate("/login"); // Redirect to Login page after successful registration
     } catch (err) {
       setError(err.response?.data?.message || "Registration failed");

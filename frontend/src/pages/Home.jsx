@@ -15,11 +15,11 @@ const Home = () => {
   const fetchData = async () => {
     try {
       const responses = await Promise.all([
-        fetch("http://localhost:8000/home/cats/count"),
-        fetch("http://localhost:8000/home/customers/count"),
-        fetch("http://localhost:8000/home/orders/count"),
-        fetch("http://localhost:8000/home/products/count"),
-        fetch("http://localhost:8000/home/users/count"),
+        fetch("http://localhost:7000/home/cats/count"),
+        fetch("http://localhost:7000/home/customers/count"),
+        fetch("http://localhost:7000/home/orders/count"),
+        fetch("http://localhost:7000/home/products/count"),
+        fetch("http://localhost:7000/home/users/count"),
       ]);
 
       // Check if all responses are OK

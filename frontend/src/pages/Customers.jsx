@@ -19,7 +19,7 @@ const Customers = () => {
 
   const fetchCustomers = async () => {
     try {
-      const response = await axios.get("http://localhost:8000/customers");
+      const response = await axios.get("http://localhost:7000/customers");
       setCustomers(response.data.customers);
     } catch (error) {
       console.error("Error fetching customers:", error);
@@ -39,11 +39,11 @@ const Customers = () => {
     try {
       if (isEdit) {
         await axios.put(
-          `http://localhost:8000/customers/${currentId}`,
+          `http://localhost:7000/customers/${currentId}`,
           formData
         );
       } else {
-        await axios.post("http://localhost:8000/customers", formData);
+        await axios.post("http://localhost:7000/customers", formData);
       }
       fetchCustomers();
       handleCloseModal();
@@ -66,7 +66,7 @@ const Customers = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:8000/customers/${id}`);
+      await axios.delete(`http://localhost:7000/customers/${id}`);
       fetchCustomers();
     } catch (error) {
       console.error("Error deleting customer:", error);
